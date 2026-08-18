@@ -309,43 +309,10 @@ button{font:inherit}
   display:flex;
   align-items:center;
   justify-content:center;
-  background:
-    radial-gradient(circle at 50% 45%,rgba(157,16,24,.12),transparent 35%),
-    radial-gradient(circle at center,#fff 0,#eee 48%,#f7f7f5 78%);
-}
-.hero-visual:before{
-  content:"DRAGON";
-  position:absolute;
-  font-size:18vw;
-  font-weight:900;
-  letter-spacing:-.08em;
-  color:rgba(0,0,0,.035);
-  white-space:nowrap;
-  transform:rotate(-90deg);
-}
-.hero-visual:after{
-  content:"";
-  position:absolute;
-  width:75%;
-  height:75%;
-  border:1px solid rgba(157,16,24,.14);
-  border-radius:50%;
-  box-shadow:0 0 0 40px rgba(157,16,24,.025),
-             0 0 0 80px rgba(157,16,24,.018);
-}
-.hero-visual img{
-  width:min(78%,720px);
-  max-height:85%;
-  object-fit:contain;
-  position:relative;
-  z-index:2;
-  filter:grayscale(1) contrast(1.2) drop-shadow(0 25px 35px rgba(0,0,0,.15));
-  mix-blend-mode:multiply;
-  animation:dragonFloat 7s ease-in-out infinite;
-}
-@keyframes dragonFloat{
-  0%,100%{transform:translateY(0) scale(1)}
-  50%{transform:translateY(-13px) scale(1.015)}
+  background-image:url("bg.png");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
 }
 
 /* =========================
@@ -971,7 +938,6 @@ footer{
     order:2;
   }
   .hero h1{font-size:22vw}
-  .hero-visual img{width:90%}
 
   .products{
     grid-template-columns:1fr 1fr;
@@ -1179,9 +1145,7 @@ footer{
 
   </div>
 
-  <div class="hero-visual">
-    <img src="dragon-logo.png" alt="Abstract Dragon">
-  </div>
+  <div class="hero-visual" aria-label="Dragon background"></div>
 
 </section>
 
