@@ -1268,6 +1268,164 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
   display:none !important;
 }
 
+
+/* =========================
+   REAL DRAWERS
+========================= */
+
+/* Left-side navigation drawer */
+.mobile-menu{
+  position:fixed;
+  left:0;
+  top:0;
+  width:min(390px,88vw);
+  height:100dvh;
+  max-height:100dvh;
+  background:#111;
+  color:#fff;
+  z-index:3000;
+  transform:translateX(-105%);
+  transition:transform .45s cubic-bezier(.22,.8,.2,1);
+  padding:30px;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  overflow-y:auto;
+  box-shadow:20px 0 60px rgba(0,0,0,.25);
+}
+.mobile-menu.open{
+  transform:translateX(0);
+}
+
+/* Bottom shopping cart drawer */
+.cart-drawer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  top:auto;
+  width:100%;
+  height:min(72dvh,620px);
+  max-height:85dvh;
+  background:#111;
+  color:#fff;
+  z-index:3001;
+  transform:translateY(105%);
+  transition:transform .45s cubic-bezier(.22,.8,.2,1);
+  padding:28px max(28px,calc((100vw - 1100px)/2));
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  border-radius:24px 24px 0 0;
+  box-shadow:0 -20px 60px rgba(0,0,0,.28);
+}
+.cart-drawer.open{
+  transform:translateY(0);
+}
+
+/* Small top handle makes bottom sheet obvious */
+.cart-drawer:before{
+  content:"";
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:46px;
+  height:4px;
+  border-radius:10px;
+  background:#444;
+}
+
+/* Cart content */
+.cart-head{
+  flex:0 0 auto;
+  padding-top:8px;
+}
+.cart-items{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.cart-footer{
+  flex:0 0 auto;
+}
+
+/* Overlay behind either drawer */
+.overlay,
+.menu-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:2990;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .35s ease,visibility .35s ease;
+}
+.overlay.show,
+.menu-overlay.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+/* Don't allow the two background layers to fight */
+.overlay{
+  z-index:2995;
+}
+.menu-overlay{
+  z-index:2990;
+}
+
+/* Mobile */
+@media(max-width:900px){
+  .mobile-menu{
+    width:min(350px,88vw);
+    padding:25px 22px;
+  }
+
+  .cart-drawer{
+    height:min(76dvh,600px);
+    max-height:82dvh;
+    padding:28px 20px 20px;
+    border-radius:22px 22px 0 0;
+  }
+
+  .cart-head{
+    padding-top:8px;
+  }
+}
+
+@media(max-width:500px){
+  .mobile-menu{
+    width:88vw;
+  }
+
+  .cart-drawer{
+    height:min(78dvh,570px);
+    padding:25px 17px 17px;
+  }
+}
+
+
+/* Final drawer position overrides */
+@media(min-width:901px){
+  .cart-drawer{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    top:auto;
+    width:100%;
+    height:min(62vh,560px);
+    max-height:80vh;
+    border-radius:26px 26px 0 0;
+    transform:translateY(105%);
+  }
+  .cart-drawer.open{transform:translateY(0);}
+}
+
 </style>
 </head>
 
@@ -1281,7 +1439,7 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
     </button>
 
     <a href="#" class="brand-mark" aria-label="Dragon home">
-      <img src="logo1.png" class="logo" alt="Dragon">
+      <img src="dragon-logo.png" class="logo" alt="Dragon">
       <span>DRAGON</span>
     </a>
 
@@ -1731,76 +1889,26 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
 const cart = [];
 
 function openCart(){
-  document.getElementById("cartDrawer").classList.add("open");
-  document.getElementById("cartDrawer").setAttribute("aria-hidden","false");
+  closeMenu();
+  const drawer=document.getElementById("cartDrawer");
+  drawer.classList.add("open");
+  drawer.setAttribute("aria-hidden","false");
   document.getElementById("overlay").classList.add("show");
   document.body.style.overflow="hidden";
 }
+
 function closeCart(){
-  document.getElementById("cartDrawer").classList.remove("open");
-  document.getElementById("cartDrawer").setAttribute("aria-hidden","true");
+  const drawer=document.getElementById("cartDrawer");
+  drawer.classList.remove("open");
+  drawer.setAttribute("aria-hidden","true");
   document.getElementById("overlay").classList.remove("show");
   if(!document.getElementById("mobileMenu").classList.contains("open")){
     document.body.style.overflow="";
   }
 }
 
-function addToCart(name, price){
-  const existing = cart.find(item => item.name === name);
-  if(existing) existing.qty++;
-  else cart.push({name, price:Number(price), qty:1});
-  renderCart();
-  openCart();
-}
-function removeFromCart(index){
-  cart.splice(index,1);
-  renderCart();
-}
-function changeQty(index, amount){
-  cart[index].qty += amount;
-  if(cart[index].qty <= 0) cart.splice(index,1);
-  renderCart();
-}
-function renderCart(){
-  const items = document.getElementById("cartItems");
-  const count = cart.reduce((sum,item)=>sum+item.qty,0);
-  const total = cart.reduce((sum,item)=>sum+(item.price*item.qty),0);
-  document.getElementById("cartCount").textContent = count;
-  document.getElementById("cartTotal").textContent = "$" + total.toFixed(2);
-  document.getElementById("checkoutBtn").disabled = cart.length === 0;
-
-  if(!cart.length){
-    items.innerHTML = `
-      <div class="cart-empty">
-        <i class="fa-solid fa-bag-shopping"></i>
-        <p>Your bag is empty.</p>
-        <button onclick="closeCart(); document.querySelector('#shop').scrollIntoView({behavior:'smooth'})">Explore collection</button>
-      </div>`;
-    return;
-  }
-
-  items.innerHTML = cart.map((item,index)=>`
-    <div class="cart-item">
-      <div>
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
-        <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
-          <button class="remove-item" onclick="changeQty(${index},-1)">−</button>
-          <span style="font-size:10px;color:#fff;">${item.qty}</span>
-          <button class="remove-item" onclick="changeQty(${index},1)">+</button>
-        </div>
-      </div>
-      <button class="remove-item" onclick="removeFromCart(${index})">REMOVE</button>
-    </div>
-  `).join("");
-}
-
-const menuToggle = document.getElementById("menuToggle");
-const mobileMenu = document.getElementById("mobileMenu");
-const menuOverlay = document.getElementById("menuOverlay");
-const menuClose = document.getElementById("menuClose");
-
 function openMenu(){
+  closeCart();
   menuToggle.classList.add("active");
   menuToggle.setAttribute("aria-expanded","true");
   mobileMenu.classList.add("open");
@@ -1808,6 +1916,7 @@ function openMenu(){
   menuOverlay.classList.add("show");
   document.body.style.overflow="hidden";
 }
+
 function closeMenu(){
   menuToggle.classList.remove("active");
   menuToggle.setAttribute("aria-expanded","false");
@@ -1821,6 +1930,7 @@ function closeMenu(){
 menuToggle.addEventListener("click",()=>mobileMenu.classList.contains("open") ? closeMenu() : openMenu());
 menuClose.addEventListener("click",closeMenu);
 menuOverlay.addEventListener("click",closeMenu);
+document.getElementById("overlay").addEventListener("click",closeCart);
 document.querySelectorAll(".mobile-links a").forEach(a=>a.addEventListener("click",closeMenu));
 });
 
