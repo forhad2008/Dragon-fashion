@@ -1259,6 +1259,15 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
   }
 }
 
+
+/* Search removed from header */
+.search-panel,
+#searchToggle,
+#searchInput,
+#searchClose{
+  display:none !important;
+}
+
 </style>
 </head>
 
@@ -1272,7 +1281,7 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
     </button>
 
     <a href="#" class="brand-mark" aria-label="Dragon home">
-      <img src="logo1.png" class="logo" alt="Dragon">
+      <img src="dragon-logo.png" class="logo" alt="Dragon">
       <span>DRAGON</span>
     </a>
 
@@ -1284,9 +1293,6 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
     </nav>
 
     <div class="header-actions">
-      <button class="icon-btn" id="searchToggle" aria-label="Search">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </button>
       <button class="cart-button" onclick="openCart()" aria-label="Open shopping cart">
         <i class="fa-solid fa-bag-shopping"></i>
         <span>Cart</span>
@@ -1294,7 +1300,7 @@ footer{background:#0c0c0c;color:#fff;border-top:1px solid #222;}
       </button>
     </div>
   </div>
-
+</header>
 
 <!-- MOBILE MENU -->
 <div class="menu-overlay" id="menuOverlay"></div>
@@ -1816,19 +1822,6 @@ menuToggle.addEventListener("click",()=>mobileMenu.classList.contains("open") ? 
 menuClose.addEventListener("click",closeMenu);
 menuOverlay.addEventListener("click",closeMenu);
 document.querySelectorAll(".mobile-links a").forEach(a=>a.addEventListener("click",closeMenu));
-
-const searchPanel = document.getElementById("searchPanel");
-document.getElementById("searchToggle").addEventListener("click",()=>{
-  searchPanel.classList.toggle("open");
-  if(searchPanel.classList.contains("open")) document.getElementById("searchInput").focus();
-});
-document.getElementById("searchClose").addEventListener("click",()=>searchPanel.classList.remove("open"));
-
-document.getElementById("searchInput").addEventListener("input",function(){
-  const query=this.value.trim().toLowerCase();
-  document.querySelectorAll("#shop .product").forEach(card=>{
-    card.style.display = !query || card.textContent.toLowerCase().includes(query) ? "" : "none";
-  });
 });
 
 document.getElementById("checkoutBtn").addEventListener("click",()=>{
@@ -1852,7 +1845,6 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"){
     closeMenu();
     closeCart();
-    searchPanel.classList.remove("open");
   }
 });
 
